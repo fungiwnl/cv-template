@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    types: [ opened, edited, synchronize ]
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: typst-community/setup-typst@v4
+      with:
+        typst-version: 0.15.1
+    - name: Compile cv.typ
+      run: typst compile --font-path fonts --ignore-system-fonts cv.typ cv.pdf
+    - uses: actions/upload-artifact@v4
+      with:
+        name: cv
+        path: cv.pdf
